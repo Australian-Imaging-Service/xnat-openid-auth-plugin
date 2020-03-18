@@ -28,11 +28,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nrg.xdat.XDAT;
 import org.nrg.xdat.security.helpers.Roles;
+import org.nrg.xdat.security.helpers.UserHelper;
 import org.nrg.xdat.security.helpers.Users;
 import org.nrg.xdat.security.user.exceptions.UserFieldMappingException;
 import org.nrg.xdat.security.user.exceptions.UserInitException;
 import org.nrg.xdat.security.user.exceptions.UserNotFoundException;
+import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
@@ -145,7 +148,19 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 				xdatUser = Users.getUser(user.getUsername());
 				if (xdatUser.isEnabled()) {
 					log.debug("User is enabled...");
-					return new OpenIdAuthToken(xdatUser, "openid");
+					final UsernamePasswordAuthenticationToken authToken=new OpenIdAuthToken(xdatUser, "openid");
+					
+					try {
+						Users.recordUserLogin(user, request);
+					} catch (Exception e1) {
+						log.error("", e1);
+					}
+
+					XDAT.setUserDetails(user);
+					AccessLogger.LogServiceAccess(user.getUsername(), request, "Authentication", "SUCCESS");
+					UserHelper.setUserHelper(request, user);
+										
+					return authToken;
 				} else {
 					throw (AuthenticationException) (new NewAutoAccountNotAutoEnabledException(
 							"New OpenID user, needs to to be enabled.", xdatUser));
