@@ -18,9 +18,7 @@
 package au.edu.qcif.xnat.auth.openid;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nrg.xdat.XDAT;
+import org.nrg.xdat.om.XdatUserLogin;
 import org.nrg.xdat.security.helpers.Roles;
 import org.nrg.xdat.security.helpers.UserHelper;
 import org.nrg.xdat.security.helpers.Users;
@@ -36,9 +35,11 @@ import org.nrg.xdat.security.user.exceptions.UserFieldMappingException;
 import org.nrg.xdat.security.user.exceptions.UserInitException;
 import org.nrg.xdat.security.user.exceptions.UserNotFoundException;
 import org.nrg.xdat.turbine.utils.AccessLogger;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
+import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResultsI;
 import org.nrg.xnat.security.exceptions.NewAutoAccountNotAutoEnabledException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,8 +152,15 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 					final UsernamePasswordAuthenticationToken authToken=new OpenIdAuthToken(xdatUser, "openid");
 					
 					try {
-						Users.recordUserLogin(user, request);
-					} catch (Exception e1) {
+						UserHelper.setUserHelper(request, xdatUser);
+
+						final XFTItem item = XFTItem.NewItem(XdatUserLogin.SCHEMA_ELEMENT_NAME, user);
+						item.setProperty(USER_XDAT_USER_ID, xdatUser.getID());
+						item.setProperty(LOGIN_DATE, Calendar.getInstance(TimeZone.getDefault()).getTime());
+						item.setProperty(IP_ADDRESS, AccessLogger.GetRequestIp(request));
+						item.setProperty(SESSION_ID, request.getSession().getId());
+						SaveItemHelper.authorizedSave(item, null, true, false, EventUtils.DEFAULT_EVENT(xdatUser, null)); // XnatBasicAuthenticationFilter
+					} catch (Throwable e1) {
 						log.error("", e1);
 					}
 
