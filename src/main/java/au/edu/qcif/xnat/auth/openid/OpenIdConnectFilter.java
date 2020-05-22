@@ -239,4 +239,8 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
 
 	}
 
+	private static final String USER_XDAT_USER_ID = XdatUserLogin.SCHEMA_ELEMENT_NAME + ".user_xdat_user_id";
+	private static final String LOGIN_DATE        = XdatUserLogin.SCHEMA_ELEMENT_NAME + ".login_date";
+	private static final String IP_ADDRESS        = XdatUserLogin.SCHEMA_ELEMENT_NAME + ".ip_address";
+	private static final String SESSION_ID        = XdatUserLogin.SCHEMA_ELEMENT_NAME + ".session_id";
 }
