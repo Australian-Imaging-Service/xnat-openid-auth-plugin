@@ -22,6 +22,8 @@ import java.util.Map;
 import org.nrg.xdat.security.XDATUser;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+import java.util.Map;
+
 /**
  * OIDC user details
  * 
