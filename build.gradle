@@ -1,8 +1,3 @@
-/*
- * xnat-openid-auth-plugin: build.gradle
- *
- */
-
 buildscript {
     ext {
         vXnat = "1.8.0"
@@ -10,14 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "application"
-    id "eclipse"
-    id "groovy"
-    id "idea"
-    id "jacoco"
     id "java"
-    id "maven-publish"
-    id "com.dorongold.task-tree" version "1.5"
     id "com.palantir.git-version" version "0.12.3"
     id "io.franzbecker.gradle-lombok" version "4.0.0"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
@@ -35,16 +23,12 @@ repositories {
     maven { url "https://nrgxnat.jfrog.io/nrgxnat/libs-snapshot" }
 }
 
-mainClassName = "ValidateLdap"
-
 configurations {
     implementation.extendsFrom(implementAndInclude)
 
     all {
-        exclude group: "com.sun.media", module: "jai_imageio"
         exclude group: "javax.sql", module: "jdbc-stdext"
         exclude group: "javax.transaction", module: "jta"
-        exclude group: "edu.ucar", module: "netcdf"
     }
 }
 
@@ -64,6 +48,8 @@ dependencies {
 
     testImplementation "junit:junit"
     testImplementation "org.springframework:spring-test"
+
+    annotationProcessor "org.projectlombok:lombok"
 }
 
 java {
@@ -80,22 +66,6 @@ jar {
     }
 }
 
-compileJava {
-    options.fork = false
-}
-
-jacoco {
-    toolVersion = dependencyManagement.importedProperties["jacoco.version"]
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = false
-        csv.enabled = false
-        html.enabled = true
-    }
-}
-
 task fatJar(type: Jar) {
     zip64 true
     archiveBaseName.set project.name + "-all"
@@ -106,36 +76,3 @@ task fatJar(type: Jar) {
     }
     with jar
 }
-
-sourceSets {
-    main {
-        java {
-            srcDir "build/xnat-generated/src/main/java"
-        }
-        resources {
-            srcDir "build/xnat-generated/src/main/resources"
-        }
-    }
-}
-
-def propertyWithDefault(String name, Object value) {
-    hasProperty(name) ? property(name) : value
-}
-
-/*
-def sonatypeUsername = hasProperty("SONATYPE_USERNAME") ? sonatypeUsername : System.getProperty("SONATYPE_USERNAME")
-def sonatypePassword = hasProperty("SONATYPE_USERNAME") ? sonatypePassword : System.getProperty("SONATYPE_PASSWORD")
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "http://dev.redboxresearchdata.com.au/nexus/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-            pom.version = project.version
-            pom.artifactId = rootProject.name
-            pom.groupId = project.group
-        }
-    }
-}
-*/
