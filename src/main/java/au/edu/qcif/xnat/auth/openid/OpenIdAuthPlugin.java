@@ -60,6 +60,7 @@ import java.util.Properties;
 public class OpenIdAuthPlugin implements XnatSecurityExtension {
 
 	private static final String ID = "openid";
+	private static final String DEFAULT_REDIR_URI = "/openid-login";
 
 	@Autowired
 	public void setAuthenticationProviderConfigurationLocator(
@@ -118,7 +119,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	@Bean
 	@Scope("prototype")
 	public OpenIdConnectFilter createFilter() {
-        return new OpenIdConnectFilter(getProps().getProperty("preEstablishedRedirUri"), this);
+        return new OpenIdConnectFilter(getProps().getProperty("preEstablishedRedirUri", DEFAULT_REDIR_URI), this);
 	}
 
 	public void configure(final HttpSecurity http) {
