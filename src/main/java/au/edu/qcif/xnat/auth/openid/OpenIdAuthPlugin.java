@@ -119,7 +119,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
         return new OpenIdConnectFilter(getProps().getProperty("preEstablishedRedirUri"), this);
 	}
 
-	public void configure(final HttpSecurity http) throws Exception {
+	public void configure(final HttpSecurity http) {
 		this.http = http;
 		http.addFilterAfter(new OAuth2ClientContextFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterAfter(createFilter(), OAuth2ClientContextFilter.class);
@@ -159,7 +159,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 		}
 	}
 
-	public void configure(final AuthenticationManagerBuilder builder) throws Exception {
+	public void configure(final AuthenticationManagerBuilder builder) {
 
 	}
 
