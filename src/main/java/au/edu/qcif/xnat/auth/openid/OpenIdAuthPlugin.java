@@ -134,7 +134,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	}
 
 	@Override
-	public void configure(final HttpSecurity http) throws Exception {
+	public void configure(final HttpSecurity http) {
 		this.http = http;
 		
 		http.addFilterAfter(new OAuth2ClientContextFilter(), AbstractPreAuthenticatedProcessingFilter.class)
@@ -184,7 +184,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	}
 
 	@Override
-	public void configure(final AuthenticationManagerBuilder builder) throws Exception {
+	public void configure(final AuthenticationManagerBuilder builder) {
 
 	}
 
