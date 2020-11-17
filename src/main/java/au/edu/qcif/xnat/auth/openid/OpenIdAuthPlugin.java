@@ -125,7 +125,12 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 
 	public String[] getEnabledProviders() {
 		if (_enabledProviders == null) {
-			_enabledProviders = _props.getProperty("enabled").split(",");
+			String enabled = _props.getProperty("enabled", "");
+			if(enabled.isEmpty()) {
+				_enabledProviders = new String[0];
+			} else {
+				_enabledProviders = enabled.split(",");
+			}
 		}
 		return _enabledProviders;
 	}
