@@ -8,6 +8,12 @@
 #* @vtlvariable name="systemName" type="java.lang.String" *#
 #* @vtlvariable name="turbineUtils" type="org.nrg.xdat.turbine.utils.TurbineUtils" *#
 #* @vtlvariable name="ui" type="org.apache.turbine.services.pull.util.UIManager" *#
+<!-- OPENID BEGIN -->
+#set($pluginClassMethod = $siteConfig.getClass().forName("au.edu.qcif.xnat.auth.openid.OpenIdAuthPlugin").getMethod("getLoginStr"))
+#set($pluginClassMethodDisableUsernamePassword = $siteConfig.getClass().forName("au.edu.qcif.xnat.auth.openid.OpenIdAuthPlugin").getMethod("getUsernamePasswordStyle"))
+#set($loginStr = $pluginClassMethod.invoke(null))
+#set($usernamePasswordStyleStr = $pluginClassMethodDisableUsernamePassword.invoke(null))
+<!-- OPENID END -->
 <!-- BEGIN xnat-templates/screens/Login.vm -->
 #set ($siteId = $siteConfig.siteId)
 $page.setTitle("$siteId - Please Login")
@@ -82,7 +88,7 @@ $page.setTitle("$siteId - Please Login")
             Not what you want? <a href="$content.getURI('/app/template/Login.vm')"><strong>Default Log In Page</strong></a>
         </div>
         <div class="clear" style="margin:2em 0;"></div>
-        <div id="login_box">
+        <div id="login_box" style="$usernamePasswordStyleStr">
             <form name="form1" method="post" action="$content.getURI("/login")" class="noHide friendlyForm validate" id="login_form">
                 #if($login_methods)
                     #if ($login_methods.size() == 0)
@@ -216,6 +222,9 @@ $page.setTitle("$siteId - Please Login")
             <input type="hidden" name="XNAT_CSRF" value="">
         </form>
     </div>
+    <!-- OPENID BEGIN -->
+    $loginStr
+    <!-- OPENID END -->
     </div>
 
     <div class="clear"></div>
