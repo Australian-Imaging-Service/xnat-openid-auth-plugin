@@ -147,12 +147,11 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 
 	public static String getLoginStr() {
 		String[] enabledProviders = _inst.getEnabledProviders();
-		String loginStr = "";
-		int idx = 0;
+		StringBuilder sb = new StringBuilder();
 		for (String enabledProvider : enabledProviders) {
-			loginStr = loginStr + _inst.getProperty(enabledProvider, "link");
+			sb.append(_inst.getProperty(enabledProvider, "link"));
 		}
-		return loginStr;
+		return sb.toString();
 	}
 
 	public static String getUsernamePasswordStyle() {
