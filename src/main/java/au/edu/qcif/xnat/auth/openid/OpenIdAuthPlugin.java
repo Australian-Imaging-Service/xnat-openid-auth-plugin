@@ -74,7 +74,9 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 					new ImplicitAccessTokenProvider(),
 					new ResourceOwnerPasswordAccessTokenProvider(),
 					new ClientCredentialsAccessTokenProvider()));
-	
+
+	private static final String ID = "openid";
+
 	@Autowired
 	public void setAuthenticationProviderConfigurationLocator(final AuthenticationProviderConfigurationLocator locator) {
 		_locator = locator;
@@ -93,7 +95,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 
 	public String getProperty(String providerId, String propName) {
 		loadProps();
-		return _props.getProperty(_id + "." + providerId + "." + propName);
+		return _props.getProperty(ID + "." + providerId + "." + propName);
 	}
 
 	private void loadProps() {
@@ -151,7 +153,6 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	}
 
 	private AuthenticationProviderConfigurationLocator _locator;
-	private static String _id = "openid";
 	private Properties _props;
 	private String[] _enabledProviders;
 	private static OpenIdAuthPlugin _inst;
@@ -189,7 +190,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	}
 
 	public String getAuthMethod() {
-		return _id;
+		return ID;
 	}
 
 	@Bean
