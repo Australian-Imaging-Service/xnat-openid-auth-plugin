@@ -143,8 +143,6 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 
 	@Override
 	public void configure(final HttpSecurity http) {
-		this.http = http;
-		
 		http.addFilterAfter(new OAuth2ClientContextFilter(), AbstractPreAuthenticatedProcessingFilter.class)
 				.addFilterAfter(createFilter(), OAuth2ClientContextFilter.class);
 	}
@@ -162,12 +160,6 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	private Properties _props;
 	private String[] _enabledProviders;
 	private static OpenIdAuthPlugin _inst;
-	private boolean isFilterConfigured = false;
-	private HttpSecurity http;
-
-	public static Properties getConfig() {
-		return _inst.getProps();
-	}
 
 	public static String getLoginStr() {
 		StringBuilder sb = new StringBuilder();
