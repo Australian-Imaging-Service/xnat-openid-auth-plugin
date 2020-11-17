@@ -170,9 +170,8 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
 	}
 
 	public static String getLoginStr() {
-		String[] enabledProviders = _inst.getEnabledProviders();
 		StringBuilder sb = new StringBuilder();
-		for (String enabledProvider : enabledProviders) {
+		for (String enabledProvider : _inst.getEnabledProviders()) {
 			sb.append(_inst.getProperty(enabledProvider, "link"));
 		}
 		return sb.toString();
