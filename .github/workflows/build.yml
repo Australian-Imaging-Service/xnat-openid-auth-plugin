@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Work around https://github.com/actions/checkout/issues/290
+      - run: git fetch --force --tags
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-cache
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - run: ./gradlew fatJar
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-artifacts
+          path: build/libs/*.jar
