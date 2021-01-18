@@ -19,17 +19,26 @@ buildscript {
     dependencies {
         classpath "org.nrg.xnat.build:xnat-data-builder:${vXnat}"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
-        classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.8.0"
     }
 }
 
+plugins {
+    id 'fr.brouillard.oss.gradle.jgitver' version '0.9.1'
+}
+
+jgitver {
+    useDistance true
+    useGitCommitID true
+    useDirty true
+    /* To play nice with literally everything else. */
+    autoIncrementPatch false
+}
+
 group 'au.edu.qcif.xnat.openid'
-version '1.0.0-SNAPSHOT'
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'java'
 apply plugin: 'xnat-data-builder'
-apply plugin: 'com.palantir.git-version'
 
 repositories {
     mavenLocal()
@@ -76,12 +85,6 @@ dependencies {
 }
 
 jar {
-    manifest {
-        attributes 'Application-Name': 'XNAT OpenID Authentication Provider',
-                'Build-Date': new Date(),
-                'Implementation-Sha': gitVersion(),
-                'Implementation-Version': version
-    }
 	from {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	}
@@ -93,7 +96,19 @@ task fatJar(type: Jar) {
     from {
         configurations.compileAndInclude.collect { it.isDirectory() ? it : zipTree(it) }
     } {
-        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+        exclude "META-INF/*.MF", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
     }
     with jar
+}
+
+/* FIXME: fatJar isn't inheriting the manifest from jar, so hack around it. */
+[jar, fatJar].each { it ->
+    it.doFirst {
+        manifest {
+            attributes 'Application-Name': 'XNAT OpenID Authentication Provider',
+                    'Build-Date': new Date(),
+                    'Implementation-Sha': project.ext.git_sha1_full,
+                    'Implementation-Version': project.version
+        }
+    }
 }
