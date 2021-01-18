@@ -64,7 +64,6 @@ jar {
 }
 
 task fatJar(type: Jar) {
-    zip64 true
     archiveBaseName.set project.name + "-all"
     from {
         configurations.implementAndInclude.collect { it.isDirectory() ? it : zipTree(it) }
