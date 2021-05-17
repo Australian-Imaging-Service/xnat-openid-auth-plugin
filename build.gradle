@@ -58,11 +58,8 @@ java {
 }
 
 jar {
-    manifest {
-        attributes "Application-Name": project.description,
-                   "Build-Date": new Date(),
-                   "Implementation-Sha": gitVersion(),
-                   "Implementation-Version": project.version
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -72,7 +69,19 @@ task fatJar(type: Jar) {
     from {
         configurations.implementAndInclude.collect { it.isDirectory() ? it : zipTree(it) }
     } {
-        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.RSA"
     }
     with jar
+}
+
+/* FIXME: fatJar isn't inheriting the manifest from jar, so hack around it. */
+[jar, fatJar].each { it ->
+    it.doFirst {
+        manifest {
+            attributes 'Application-Name': project.description,
+                       'Build-Date': new Date(),
+                       'Implementation-Sha': gitVersion(),
+                       'Implementation-Version': project.version
+        }
+    }
 }
